@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Login Security • Trans Banyumas</title>
+  <link rel="icon" type="image/png" href="assets/img/logo-transbanyumas.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body class="bg-[#0F172A] text-slate-100 flex items-center justify-center min-h-screen p-4">
+  <div id="toastWrap"></div>
+
+  <div class="login-card w-full max-w-[420px] bg-slate-900 border border-slate-800 rounded-[28px] p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+    <!-- Top Decorative Line -->
+    <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-teal-400 to-amber-500"></div>
+
+    <!-- Logo & Header -->
+    <div class="text-center pt-3 pb-6">
+      <div class="w-24 h-24 mx-auto flex items-center justify-center mb-3 p-2 bg-white rounded-2xl shadow-xl shadow-blue-500/20">
+        <img src="assets/img/logo-transbanyumas.png" alt="Logo Trans Banyumas" class="w-full h-full object-contain">
+      </div>
+      <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white">TRANS BANYUMAS</h1>
+      <p class="text-xs uppercase tracking-widest text-blue-400 font-bold mt-1">Sistem Patroli Security</p>
+      <div class="mt-3 inline-flex items-center gap-1.5 bg-slate-800/80 border border-slate-700/80 px-3 py-1 rounded-full text-[11px] text-slate-300">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+        <span id="loginDate"></span>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" onsubmit="handleLoginSubmit(event); return false;" class="space-y-4">
+      <div id="loginAlert" class="hidden p-3.5 rounded-xl bg-red-950/80 border border-red-800 text-red-200 text-xs font-semibold"></div>
+
+      <div>
+        <label for="username" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Username Petugas</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 text-sm">👤</span>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            required 
+            placeholder="Contoh: superadmin atau security1" 
+            class="w-full bg-slate-800/90 border border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-white rounded-xl pl-10 pr-4 py-3 text-sm font-semibold outline-none transition"
+            autocomplete="username"
+          >
+        </div>
+      </div>
+
+      <div>
+        <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Password</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 text-sm">🔒</span>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            required 
+            placeholder="Masukkan kata sandi" 
+            class="w-full bg-slate-800/90 border border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-white rounded-xl pl-10 pr-10 py-3 text-sm font-semibold outline-none transition"
+            autocomplete="current-password"
+          >
+          <button type="button" onclick="togglePassVisibility()" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-white text-xs font-bold">
+            <span id="passIcon">👁️</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between text-xs pt-1">
+        <label class="flex items-center gap-2 cursor-pointer text-slate-400">
+          <input type="checkbox" id="rememberMe" class="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0">
+          <span>Ingat saya di HP ini</span>
+        </label>
+        <button type="button" onclick="showForgotPasswordInfo()" class="text-blue-400 hover:underline font-semibold">Lupa Password?</button>
+      </div>
+
+      <button 
+        type="button" 
+        onclick="handleLoginSubmit(event)" 
+        id="btnLogin" 
+        class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white py-3.5 rounded-xl font-extrabold text-sm shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2 mt-2 cursor-pointer"
+      >
+        <span>MASUK KE SISTEM</span>
+        <span>→</span>
+      </button>
+
+      <!-- Quick Fill for Testing -->
+      <div class="pt-2 text-center">
+        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">⚡ Klik Akun Cepat:</p>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="isiAkunCepat('superadmin', 'Admin@TransBms2024')" class="bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 border border-purple-700/60 py-2 px-2.5 rounded-xl text-xs font-bold transition flex flex-col items-center justify-center">
+            <span>👑 Super Admin</span>
+            <span class="text-[9px] text-purple-400/80 font-normal mt-0.5">superadmin</span>
+          </button>
+          <button type="button" onclick="isiAkunCepat('security1', 'Security@123')" class="bg-blue-950/60 hover:bg-blue-900/80 text-blue-300 border border-blue-700/60 py-2 px-2.5 rounded-xl text-xs font-bold transition flex flex-col items-center justify-center">
+            <span>👮 Security 1</span>
+            <span class="text-[9px] text-blue-400/80 font-normal mt-0.5">security1</span>
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Footer info -->
+    <div class="mt-6 pt-5 border-t border-slate-800/80 text-center">
+      <p class="text-[11px] text-slate-500 font-medium">
+        Dilindungi enkripsi JWT & Bcrypt 12 rounds.<br>
+        Akun dikelola oleh Super Admin PT Trans Banyumas.
+      </p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    // Redirect if already logged in
+    Auth.redirectIfAuthenticated();
+
+    document.getElementById('loginDate').textContent = tanggalIndo();
+
+    function togglePassVisibility() {
+      const p = document.getElementById('password');
+      const ic = document.getElementById('passIcon');
+      if (p.type === 'password') {
+        p.type = 'text';
+        ic.textContent = '🙈';
+      } else {
+        p.type = 'password';
+        ic.textContent = '👁️';
+      }
+    }
+
+    function showForgotPasswordInfo() {
+      showToast('Untuk reset kata sandi, silakan hubungi Koordinator Security atau Super Admin.', 'info', 5000);
+    }
+
+    function isiAkunCepat(u, p) {
+      document.getElementById('username').value = u;
+      document.getElementById('password').value = p;
+      showToast('Akun ' + u + ' terisi! Silakan klik "MASUK KE SISTEM".', 'ok');
+    }
+
+    async function handleLoginSubmit(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      const alertEl = document.getElementById('loginAlert');
+      const btn = document.getElementById('btnLogin');
+
+      alertEl.classList.add('hidden');
+
+      if (!u || !p) {
+        showToast('Isi username dan password dengan benar!', 'warn');
+        return false;
+      }
+
+      showLoading(btn, 'Memverifikasi...');
+
+      try {
+        await Auth.login(u, p);
+      } catch (err) {
+        hideLoading(btn);
+        alertEl.textContent = '⚠️ ' + err.message;
+        alertEl.classList.remove('hidden');
+        showToast(err.message, 'err');
+      }
+      return false;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN PANEL - Security Trans Banyumas</title>
+    <link rel="icon" type="image/png" href="assets/img/logo-transbanyumas.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sidebar: '#0F172A',
+                        'sidebar-hover': '#1E293B',
+                        'sidebar-active': '#334155',
+                        primary: '#3B82F6',
+                        'primary-dark': '#2563EB',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        danger: '#EF4444',
+                        info: '#06B6D4',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .sidebar-transition { transition: transform 0.3s ease-in-out, width 0.3s ease-in-out; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinner { animation: spin 1s linear infinite; }
+        .toast-enter { animation: toastIn 0.3s ease-out; }
+        .toast-exit { animation: toastOut 0.3s ease-in forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .modal-backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[9999] flex flex-col gap-2 max-w-sm w-full"></div>
+
+    <!-- Mobile Overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-sidebar text-white z-40 sidebar-transition transform -translate-x-full lg:translate-x-0 flex flex-col">
+        <!-- Logo -->
+        <div class="p-4 border-b border-white/10 flex items-center gap-3">
+            <img src="assets/img/logo-transbanyumas.png" alt="Logo Trans Banyumas" class="h-10 w-10 rounded-lg bg-white p-1 object-contain shadow-sm">
+            <div class="min-w-0">
+                <h1 class="text-sm font-bold leading-tight truncate">ADMIN PANEL</h1>
+                <p class="text-xs text-gray-400 truncate">Security Trans Banyumas</p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 py-4 overflow-y-auto">
+            <ul class="space-y-1 px-3">
+                <li>
+                    <button onclick="navigateTo('dashboard')" data-nav="dashboard" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-sidebar-hover text-gray-300 hover:text-white">
+                        <span class="text-lg">🏠</span>
+                        <span>Dashboard</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navigateTo('users')" data-nav="users" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-sidebar-hover text-gray-300 hover:text-white">
+                        <span class="text-lg">👥</span>
+                        <span>Kelola User</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navigateTo('reports')" data-nav="reports" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-sidebar-hover text-gray-300 hover:text-white">
+                        <span class="text-lg">📋</span>
+                        <span>Semua Laporan</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navigateTo('stats')" data-nav="stats" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-sidebar-hover text-gray-300 hover:text-white">
+                        <span class="text-lg">📊</span>
+                        <span>Statistik & Rekap</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navigateTo('audit')" data-nav="audit" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-sidebar-hover text-gray-300 hover:text-white">
+                        <span class="text-lg">📝</span>
+                        <span>Audit Log</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navigateTo('settings')" data-nav="settings" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-sidebar-hover text-gray-300 hover:text-white">
+                        <span class="text-lg">⚙️</span>
+                        <span>Pengaturan</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- User Info at Bottom -->
+        <div class="p-4 border-t border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-sm font-bold" id="sidebar-avatar">A</div>
+                <div class="min-w-0 flex-1">
+                    <p class="text-sm font-medium truncate" id="sidebar-username">Admin</p>
+                    <p class="text-xs text-gray-400" id="sidebar-role">Super Admin</p>
+                </div>
+                <button onclick="handleLogout()" class="p-1.5 rounded-lg hover:bg-sidebar-hover text-gray-400 hover:text-red-400 transition-colors" title="Logout">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64 min-h-screen">
+        <!-- Top Bar -->
+        <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-20">
+            <div class="flex items-center justify-between px-4 py-3">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <h2 class="text-lg font-semibold text-gray-800" id="page-title">Dashboard</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500 hidden sm:block" id="current-date"></span>
+                    <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold" id="topbar-avatar">A</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="p-4 md:p-6">
+            <!-- Loading State -->
+            <div id="loading-state" class="flex flex-col items-center justify-center py-20">
+                <svg class="w-10 h-10 text-primary spinner" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                <p class="mt-3 text-gray-500">Memuat data...</p>
+            </div>
+
+            <!-- ==================== DASHBOARD PAGE ==================== -->
+            <div id="page-dashboard" class="page-content hidden fade-in">
+                <!-- Welcome Card -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-6 text-white mb-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h3 class="text-xl font-bold">Selamat Datang, <span id="welcome-name">Admin</span> 👋</h3>
+                            <p class="text-blue-100 mt-1" id="welcome-date">Loading...</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="navigateTo('users'); openUserModal()" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors backdrop-blur-sm">
+                                + Tambah User
+                            </button>
+                            <button onclick="navigateTo('reports')" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors backdrop-blur-sm">
+                                📋 Lihat Laporan
+                            </button>
+                            <button onclick="navigateTo('stats')" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors backdrop-blur-sm hidden sm:block">
+                                📊 Export Rekap
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide font-medium">Total Security</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1" id="stat-total-security">-</p>
+                            </div>
+                            <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-xl">👥</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide font-medium">Laporan Hari Ini</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1" id="stat-laporan-today">-</p>
+                            </div>
+                            <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center text-xl">📋</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide font-medium">Temuan Hari Ini</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1" id="stat-temuan-today">-</p>
+                            </div>
+                            <div class="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center text-xl">⚠️</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide font-medium">Security Aktif</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1" id="stat-security-aktif">-</p>
+                            </div>
+                            <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center text-xl">✅</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Reports -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                        <h4 class="font-semibold text-gray-800">Laporan Terbaru</h4>
+                        <button onclick="navigateTo('reports')" class="text-sm text-primary hover:text-primary-dark font-medium">Lihat Semua →</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gray-50 text-left">
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Waktu</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Petugas</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Koridor</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Status</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-reports-body">
+                                <tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== KELOLA USER PAGE ==================== -->
+            <div id="page-users" class="page-content hidden fade-in">
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Kelola User</h3>
+                        <p class="text-sm text-gray-500 mt-1">Manage semua akun pengguna sistem</p>
+                    </div>
+                    <button onclick="openUserModal()" class="px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 self-start">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Tambah User Baru
+                    </button>
+                </div>
+
+                <!-- Search & Filter -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <div class="flex-1">
+                            <input type="text" id="user-search" placeholder="Cari username atau nama..." class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" oninput="filterUsers()">
+                        </div>
+                        <select id="user-role-filter" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" onchange="filterUsers()">
+                            <option value="">Semua Role</option>
+                            <option value="super_admin">Super Admin</option>
+                            <option value="admin">Admin</option>
+                            <option value="security">Security</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="table-responsive">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gray-50 text-left">
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">No</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Username</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Nama Lengkap</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Role</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">No HP</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Koridor</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Status</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== SEMUA LAPORAN PAGE ==================== -->
+            <div id="page-reports" class="page-content hidden fade-in">
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Semua Laporan</h3>
+                        <p class="text-sm text-gray-500 mt-1">Riwayat semua laporan patroli</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="exportReportsCSV()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            Export CSV
+                        </button>
+                        <button onclick="deleteSelectedReports()" id="btn-delete-selected" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors hidden items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            Hapus Terpilih
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Dari Tanggal</label>
+                            <input type="date" id="report-date-from" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" onchange="filterReports()">
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Sampai Tanggal</label>
+                            <input type="date" id="report-date-to" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" onchange="filterReports()">
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Koridor</label>
+                            <select id="report-koridor-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" onchange="filterReports()">
+                                <option value="">Semua Koridor</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Status</label>
+                            <select id="report-status-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" onchange="filterReports()">
+                                <option value="">Semua Status</option>
+                                <option value="aman">Aman</option>
+                                <option value="temuan">Temuan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Petugas</label>
+                            <select id="report-petugas-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" onchange="filterReports()">
+                                <option value="">Semua Petugas</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="table-responsive">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gray-50 text-left">
+                                    <th class="px-4 py-3"><input type="checkbox" id="select-all-reports" onchange="toggleSelectAllReports()" class="rounded"></th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">No</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Tanggal/Waktu</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Petugas</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Koridor</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Shift</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Status</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Keterangan</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reports-table-body">
+                                <tr><td colspan="9" class="px-4 py-8 text-center text-gray-400">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="p-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <p class="text-sm text-gray-500" id="reports-pagination-info">Menampilkan 0 dari 0 laporan</p>
+                        <div class="flex gap-1" id="reports-pagination-buttons"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== STATISTIK PAGE ==================== -->
+            <div id="page-stats" class="page-content hidden fade-in">
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Statistik & Rekap</h3>
+                        <p class="text-sm text-gray-500 mt-1">Analisis data patroli keamanan</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="month" id="stats-month" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" onchange="loadStats()">
+                        <button onclick="exportStatsCSV()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            CSV
+                        </button>
+                        <button onclick="shareStatsWA()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+                            Share WA
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Summary -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center">
+                        <p class="text-sm text-gray-500 font-medium">Total Laporan</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-2" id="stats-total">0</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center">
+                        <p class="text-sm text-gray-500 font-medium">Aman</p>
+                        <p class="text-3xl font-bold text-green-600 mt-2" id="stats-aman">0</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center">
+                        <p class="text-sm text-gray-500 font-medium">Temuan</p>
+                        <p class="text-3xl font-bold text-red-600 mt-2" id="stats-temuan">0</p>
+                    </div>
+                </div>
+
+                <!-- Per Corridor Breakdown -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                        <div class="p-4 border-b border-gray-100">
+                            <h4 class="font-semibold text-gray-800">Rekap Per Koridor</h4>
+                        </div>
+                        <div class="p-4">
+                            <div id="stats-corridor-breakdown" class="space-y-3">
+                                <p class="text-gray-400 text-sm text-center py-4">Memuat data...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                        <div class="p-4 border-b border-gray-100">
+                            <h4 class="font-semibold text-gray-800">Rekap Per Petugas</h4>
+                        </div>
+                        <div class="p-4">
+                            <div id="stats-officer-breakdown" class="space-y-3">
+                                <p class="text-gray-400 text-sm text-center py-4">Memuat data...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== AUDIT LOG PAGE ==================== -->
+            <div id="page-audit" class="page-content hidden fade-in">
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Audit Log</h3>
+                        <p class="text-sm text-gray-500 mt-1">Log aktivitas pengguna (read-only)</p>
+                    </div>
+                </div>
+
+                <!-- Filter -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Dari Tanggal</label>
+                            <input type="date" id="audit-date-from" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" onchange="filterAuditLogs()">
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Sampai Tanggal</label>
+                            <input type="date" id="audit-date-to" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" onchange="filterAuditLogs()">
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">User</label>
+                            <select id="audit-user-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" onchange="filterAuditLogs()">
+                                <option value="">Semua User</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Jenis Aksi</label>
+                            <select id="audit-action-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" onchange="filterAuditLogs()">
+                                <option value="">Semua Aksi</option>
+                                <option value="login">Login</option>
+                                <option value="logout">Logout</option>
+                                <option value="create">Create</option>
+                                <option value="update">Update</option>
+                                <option value="delete">Delete</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audit Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="table-responsive">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gray-50 text-left">
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Waktu</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">User</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Aksi</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Detail</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">IP Address</th>
+                                </tr>
+                            </thead>
+                            <tbody id="audit-table-body">
+                                <tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="p-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <p class="text-sm text-gray-500" id="audit-pagination-info">Menampilkan 0 dari 0 log</p>
+                        <div class="flex gap-1" id="audit-pagination-buttons"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== PENGATURAN PAGE ==================== -->
+            <div id="page-settings" class="page-content hidden fade-in">
+                <div class="max-w-3xl">
+                    <!-- Header -->
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-gray-800">Pengaturan</h3>
+                        <p class="text-sm text-gray-500 mt-1">Konfigurasi sistem dan data master</p>
+                    </div>
+
+                    <!-- Manage Koridor -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6">
+                        <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                            <h4 class="font-semibold text-gray-800">Daftar Koridor</h4>
+                            <button onclick="addKoridor()" class="px-3 py-1.5 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm font-medium transition-colors">+ Tambah</button>
+                        </div>
+                        <div class="p-4">
+                            <div id="koridor-list" class="space-y-2">
+                                <p class="text-gray-400 text-sm text-center py-4">Memuat data...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Info -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6">
+                        <div class="p-4 border-b border-gray-100">
+                            <h4 class="font-semibold text-gray-800">Informasi Sistem</h4>
+                        </div>
+                        <div class="p-4 space-y-3">
+                            <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                                <span class="text-sm text-gray-600">Versi Aplikasi</span>
+                                <span class="text-sm font-medium text-gray-800" id="sys-version">1.0.0</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                                <span class="text-sm text-gray-600">Database</span>
+                                <span class="text-sm font-medium text-gray-800" id="sys-database">SQLite</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                                <span class="text-sm text-gray-600">Ukuran Database</span>
+                                <span class="text-sm font-medium text-gray-800" id="sys-db-size">-</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2">
+                                <span class="text-sm text-gray-600">Total User Terdaftar</span>
+                                <span class="text-sm font-medium text-gray-800" id="sys-total-users">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Backup -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                        <div class="p-4 border-b border-gray-100">
+                            <h4 class="font-semibold text-gray-800">Backup & Restore</h4>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-500 mb-4">Download backup database untuk menjaga keamanan data.</p>
+                            <button onclick="backupDatabase()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                Backup Database
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- User Modal (Create/Edit) -->
+    <div id="modal-user" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop absolute inset-0" onclick="closeUserModal()"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-md fade-in">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-gray-800" id="user-modal-title">Tambah User Baru</h3>
+                    <button onclick="closeUserModal()" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <form id="user-form" onsubmit="saveUser(event)" class="p-6 space-y-4">
+                    <input type="hidden" id="user-id" value="">
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-1 block">Username <span class="text-red-500">*</span></label>
+                        <input type="text" id="user-username" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Masukkan username">
+                    </div>
+                    <div id="password-field">
+                        <label class="text-sm font-medium text-gray-700 mb-1 block">Password <span class="text-red-500">*</span></label>
+                        <input type="password" id="user-password" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Masukkan password">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-1 block">Nama Lengkap <span class="text-red-500">*</span></label>
+                        <input type="text" id="user-nama" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Masukkan nama lengkap">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-1 block">Role <span class="text-red-500">*</span></label>
+                        <select id="user-role" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                            <option value="">Pilih Role</option>
+                            <option value="super_admin">Super Admin</option>
+                            <option value="admin">Admin</option>
+                            <option value="security">Security</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-1 block">No HP</label>
+                        <input type="tel" id="user-nohp" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="08xxxxxxxxxx">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-1 block">Koridor Default</label>
+                        <select id="user-koridor" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                            <option value="">Pilih Koridor</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="closeUserModal()" class="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">Batal</button>
+                        <button type="submit" id="user-submit-btn" class="flex-1 px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm font-medium transition-colors">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div id="modal-reset-password" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop absolute inset-0" onclick="closeResetPasswordModal()"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm fade-in">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-gray-800">Reset Password</h3>
+                    <button onclick="closeResetPasswordModal()" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <form onsubmit="submitResetPassword(event)" class="p-6 space-y-4">
+                    <input type="hidden" id="reset-user-id" value="">
+                    <p class="text-sm text-gray-600">Reset password untuk user: <strong id="reset-user-name">-</strong></p>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-1 block">Password Baru <span class="text-red-500">*</span></label>
+                        <input type="password" id="reset-password" required minlength="6" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Minimal 6 karakter">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-1 block">Konfirmasi Password <span class="text-red-500">*</span></label>
+                        <input type="password" id="reset-password-confirm" required minlength="6" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Ulangi password baru">
+                    </div>
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="closeResetPasswordModal()" class="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">Batal</button>
+                        <button type="submit" class="flex-1 px-4 py-2.5 bg-warning hover:bg-yellow-600 text-white rounded-lg text-sm font-medium transition-colors">Reset Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Detail Modal -->
+    <div id="modal-report-detail" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop absolute inset-0" onclick="closeReportDetailModal()"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg fade-in max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white rounded-t-2xl">
+                    <h3 class="text-lg font-bold text-gray-800">Detail Laporan</h3>
+                    <button onclick="closeReportDetailModal()" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div class="p-6" id="report-detail-content">
+                    <p class="text-gray-400 text-center">Memuat...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div id="modal-confirm" class="fixed inset-0 z-[60] hidden">
+        <div class="modal-backdrop absolute inset-0"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm fade-in">
+                <div class="p-6 text-center">
+                    <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+                        <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.268 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2" id="confirm-title">Konfirmasi</h3>
+                    <p class="text-sm text-gray-600 mb-6" id="confirm-message">Apakah Anda yakin?</p>
+                    <div class="flex gap-3">
+                        <button onclick="closeConfirmDialog(false)" class="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">Batal</button>
+                        <button onclick="closeConfirmDialog(true)" id="confirm-btn" class="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">Hapus</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

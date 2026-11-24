@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" fill="none">
+  <defs>
+    <linearGradient id="sg" x1="0" y1="0" x2="100" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#1E40AF"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Shield -->
+  <path d="M10 20 C10 10 18 4 28 4 L72 4 C82 4 90 10 90 20 L90 65 C90 85 55 108 50 112 C45 108 10 85 10 65 Z" fill="url(#sg)" stroke="#1E3A8A" stroke-width="2.5"/>
+  
+  <!-- Inner shield shadow -->
+  <path d="M20 26 C20 18 26 14 32 14 L68 14 C74 14 80 18 80 26 L80 60 C80 76 55 95 50 100 C45 95 20 76 20 60 Z" fill="#0F172A" opacity="0.25"/>
+  
+  <!-- Bus -->
+  <rect x="28" y="32" width="44" height="30" rx="7" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="33" y="37" width="15" height="11" rx="2.5" fill="#93C5FD"/>
+  <rect x="52" y="37" width="15" height="11" rx="2.5" fill="#93C5FD"/>
+  <rect x="26" y="52" width="48" height="7" rx="3.5" fill="#2563EB"/>
+  <circle cx="37" cy="65" r="4.5" fill="#334155" stroke="#F8FAFC" stroke-width="2"/>
+  <circle cx="63" cy="65" r="4.5" fill="#334155" stroke="#F8FAFC" stroke-width="2"/>
+  
+  <!-- Star -->
+  <polygon points="50,16 52.5,23 59,23 54,27.5 56,34 50,30 44,34 46,27.5 41,23 47.5,23" fill="#FCD34D" stroke="#F59E0B" stroke-width="0.8"/>
+  
+  <!-- BRT text on bus -->
+  <text x="50" y="58" font-family="system-ui, sans-serif" font-weight="900" font-size="8" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">BRT</text>
+</svg>

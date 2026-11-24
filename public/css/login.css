@@ -1,0 +1,307 @@
+/* =============================================
+   LOGIN.CSS - Styles khusus halaman login
+   Security Patrol System - Trans Banyumas
+   ============================================= */
+
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0F172A;
+  padding: 20px;
+  /* Gradient background halus */
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(37, 99, 235, 0.05) 0%, transparent 50%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: #1E293B;
+  border-radius: 24px;
+  border: 1px solid rgba(51, 65, 85, 0.5);
+  padding: 36px 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: loginFadeIn 0.5s ease;
+}
+
+@keyframes loginFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Logo Area --- */
+.login-logo {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.login-logo img {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 4px 12px rgba(37, 99, 235, 0.2));
+}
+
+.login-logo-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #F1F5F9;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+
+.login-logo-subtitle {
+  font-size: 0.75rem;
+  color: #64748B;
+  font-weight: 500;
+}
+
+/* --- Form Fields --- */
+.login-field {
+  margin-bottom: 18px;
+}
+
+.login-field label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #94A3B8;
+  margin-bottom: 6px;
+}
+
+.login-field .input-wrapper {
+  position: relative;
+}
+
+.login-field input {
+  width: 100%;
+  background: #0F172A;
+  border: 1.5px solid #334155;
+  border-radius: 12px;
+  padding: 13px 16px 13px 44px;
+  color: #E2E8F0;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.login-field input:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.login-field input::placeholder {
+  color: #475569;
+}
+
+.login-field .input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #475569;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.login-field .toggle-password {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 1rem;
+}
+
+/* --- Remember Me --- */
+.login-remember {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.login-remember label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: #94A3B8;
+  cursor: pointer;
+  user-select: none;
+}
+
+.login-remember input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563EB;
+  cursor: pointer;
+}
+
+.login-forgot {
+  font-size: 0.75rem;
+  color: #60A5FA;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+}
+
+.login-forgot:hover {
+  text-decoration: underline;
+}
+
+/* --- Login Button --- */
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.login-btn:hover {
+  box-shadow: 0 6px 24px rgba(37, 99, 235, 0.45);
+  transform: translateY(-1px);
+}
+
+.login-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-btn .btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+
+.login-btn.loading .btn-spinner {
+  display: block;
+}
+
+.login-btn.loading .btn-text {
+  display: none;
+}
+
+/* --- Error Message --- */
+.login-error {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: #FCA5A5;
+  font-size: 0.8125rem;
+  margin-bottom: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+.login-error.show {
+  display: flex;
+}
+
+.login-error-icon {
+  flex-shrink: 0;
+}
+
+/* --- Footer --- */
+.login-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.6875rem;
+  color: #475569;
+}
+
+/* --- Forgot Password Modal --- */
+.forgot-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.forgot-modal.show {
+  display: flex;
+}
+
+.forgot-box {
+  background: #1E293B;
+  border-radius: 20px;
+  border: 1px solid #334155;
+  padding: 24px;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+  animation: scaleIn 0.2s ease;
+}
+
+.forgot-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.forgot-title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: #F1F5F9;
+  margin-bottom: 8px;
+}
+
+.forgot-msg {
+  font-size: 0.8125rem;
+  color: #94A3B8;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
