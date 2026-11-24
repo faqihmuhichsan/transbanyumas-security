@@ -23,7 +23,6 @@ db.pragma('journal_mode = WAL');
 // Enable foreign keys
 db.pragma('foreign_keys = ON');
 
-// Export db terlebih dahulu sebelum memanggil seed.js agar tidak mengembalikan objek kosong
 module.exports = db;
 
 // Run schema migration on startup
@@ -37,7 +36,7 @@ try {
   if (usersCount === 0) {
     console.log('[DB] Users table kosong, menjalankan auto-seed...');
     const runSeed = require('../database/seed');
-    runSeed();
+    runSeed(db);
   }
 } catch (err) {
   console.error('[DB] Failed to load schema:', err.message);
